@@ -1,0 +1,5 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# nd.sh - npm run dev
+
+log_run npm run dev

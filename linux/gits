@@ -1,0 +1,4 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# gs.sh - Show git status
+log_run git status

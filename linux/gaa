@@ -1,0 +1,5 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# gaa.sh - git add .
+
+log_run git add .

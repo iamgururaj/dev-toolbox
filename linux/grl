@@ -1,0 +1,7 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# grl.sh - hard reset to previous n commits (removes last n commits from history)
+
+num=${1:-1}
+
+log_run git reset --hard "HEAD~$num"

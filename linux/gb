@@ -1,0 +1,5 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# gb.sh - git branch
+
+log_run git branch

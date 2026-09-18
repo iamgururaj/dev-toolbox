@@ -1,0 +1,4 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# gcf.sh - git clean -fd
+log_run git clean -fd

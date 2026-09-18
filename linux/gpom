@@ -1,0 +1,5 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# gpom.sh - git push origin main
+
+log_run git push origin main

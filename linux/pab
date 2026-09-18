@@ -1,0 +1,4 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# pab.sh - pnpm approve-builds
+log_run pnpm approve-builds

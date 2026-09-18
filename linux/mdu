@@ -1,0 +1,4 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+log_info "+ mvn versions:display-dependency-updates | grep -E 'RELEASE|Final|GA|\.\\d+$' | grep -v -i 'alpha\\|beta\\|rc\\|prerelease'"
+mvn versions:display-dependency-updates | grep -E 'RELEASE|Final|GA|\.\d+$' | grep -v -i 'alpha\|beta\|rc\|prerelease'

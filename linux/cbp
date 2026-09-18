@@ -1,0 +1,4 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# cbp.sh - claude --permission-mode bypassPermissions
+log_run claude --permission-mode bypassPermissions

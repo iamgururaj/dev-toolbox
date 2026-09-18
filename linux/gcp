@@ -1,0 +1,10 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# gcp.sh - git cherry-pick <commit-hash>
+
+if [ -z "$1" ]; then
+  echo "Error: Commit hash required."
+  exit 1
+fi
+
+log_run git cherry-pick "$1"

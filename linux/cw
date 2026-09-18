@@ -1,0 +1,4 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+pid=$(pgrep "Windows App")
+log_run caffeinate -i -w "$pid"

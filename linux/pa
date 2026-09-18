@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/log_info.sh"
+# Shortcut for 'poetry add <package>'
+if [ -z "$1" ]; then
+  echo "Usage: pa <package>"
+  exit 1
+fi
+log_run poetry add "$1"

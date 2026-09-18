@@ -1,0 +1,5 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# nb.sh - npm run build
+
+log_run npm run build

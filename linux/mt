@@ -1,0 +1,6 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+source "$(dirname "$0")/log_time.sh"
+start=$(date +%s%N)
+log_run mvn -q test
+log_time "$start"

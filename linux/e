@@ -1,0 +1,48 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# filepath: /Users/gururaj/projects/guru/dev-scripts-kit/linux/e
+
+# Prompt for variable name if not provided
+if [ -z "$1" ]; then
+  read -p "Enter environment variable name: " VAR_NAME
+else
+  VAR_NAME="$1"
+fi
+
+# Prompt for variable value if not provided
+if [ -z "$2" ]; then
+  read -p "Enter value for $VAR_NAME: " VAR_VALUE
+else
+  VAR_VALUE="$2"
+fi
+
+# Optional: third param is "path" to also add value to PATH
+ADD_TO_PATH=false
+if [ "$3" = "path" ]; then
+  ADD_TO_PATH=true
+fi
+
+ZSHRC="$HOME/.zshrc"
+
+# Ensure .zshrc ends with a newline
+tail -c1 "$ZSHRC" | read -r _ || echo >> "$ZSHRC"
+
+# Append export to .zshrc
+echo "# Added by e on $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> "$ZSHRC"
+echo "export $VAR_NAME=\"$VAR_VALUE\"" >> "$ZSHRC"
+
+# Optionally add to PATH
+if $ADD_TO_PATH; then
+  echo "export PATH=\"\$${VAR_NAME}:\$PATH\"" >> "$ZSHRC"
+fi
+
+# Source .zshrc to apply changes
+. "$ZSHRC" >/dev/null 2>&1
+
+# Echo the variable to confirm
+echo "$VAR_NAME is set to: ${!VAR_NAME}"
+
+# If added to PATH, show PATH
+if $ADD_TO_PATH; then
+  echo "PATH is now: $PATH"
+fi

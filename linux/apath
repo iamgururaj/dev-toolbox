@@ -1,0 +1,82 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# Append a directory to PATH persistently for macOS and Linux.
+# Usage: apath /path/to/dir
+# Detect shell/profile file and append export line if not already present.
+
+set -e
+
+add_path_line() {
+  local target_file="$1"
+  local dir="$2"
+  # We store the literal $PATH so future shells re-expand, so search for that exact pattern.
+  if grep -Fq "export PATH=\"$dir:\$PATH\"" "$target_file"; then
+    echo "Already present in $target_file"
+    return 0
+  fi
+  # Ensure file ends with a newline before appending (POSIX: last line may lack newline)
+  tail -c1 "$target_file" 2>/dev/null | grep -q $'\n' || printf '\n' >> "$target_file"
+  {
+    # Use an RFC3339/ISO-like UTC timestamp (stable, no double spaces that confused some shells)
+    printf '\n# Added by apath %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+    printf 'export PATH="%s:$PATH"\n' "$dir"
+  } >> "$target_file"
+  echo "Appended to $target_file"
+}
+
+if [ -z "$1" ]; then
+  echo "Usage: apath <directory>" >&2
+  exit 1
+fi
+
+DIR="$1"
+if [ ! -d "$DIR" ]; then
+  echo "Directory does not exist: $DIR" >&2
+  exit 1
+fi
+
+OS=$(uname -s)
+SHELL_NAME=$(basename "$SHELL")
+PROFILE_FILES=()
+
+if [ "$OS" = "Darwin" ]; then
+  # macOS priority: .zshrc (for zsh), .bash_profile (for bash), fallback .profile
+  if [ "$SHELL_NAME" = "zsh" ]; then
+    PROFILE_FILES+=("$HOME/.zshrc")
+  elif [ "$SHELL_NAME" = "bash" ]; then
+    PROFILE_FILES+=("$HOME/.bash_profile" "$HOME/.bashrc")
+  fi
+  PROFILE_FILES+=("$HOME/.profile")
+else
+  # Linux: depending on shell
+  if [ "$SHELL_NAME" = "zsh" ]; then
+    PROFILE_FILES+=("$HOME/.zshrc" "$HOME/.zprofile")
+  elif [ "$SHELL_NAME" = "bash" ]; then
+    PROFILE_FILES+=("$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.profile")
+  else
+    PROFILE_FILES+=("$HOME/.profile")
+  fi
+fi
+
+# Create the first profile file if it does not exist
+if [ ! -f "${PROFILE_FILES[0]}" ]; then
+  touch "${PROFILE_FILES[0]}"
+fi
+
+PRIMARY_FILE="${PROFILE_FILES[0]}"
+add_path_line "$PRIMARY_FILE" "$DIR"
+
+# Apply to current session immediately
+case ":$PATH:" in
+  *":$DIR:"*) ;; # already in current session PATH
+  *) export PATH="$DIR:$PATH" ;; 
+esac
+
+# Source only if current shell type matches target file intent to avoid syntax mishaps
+if [ -f "$PRIMARY_FILE" ]; then
+  # shellcheck disable=SC1090
+  . "$PRIMARY_FILE" >/dev/null 2>&1 || true
+fi
+
+echo "Updated current PATH and appended to $PRIMARY_FILE"
+echo "(If a different shell instance still lacks it, start a new session.)"

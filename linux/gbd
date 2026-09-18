@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+source "$(dirname "$0")/log_info.sh"
+
+# gbd - interactively delete local Git branches
+
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "Error: Not inside a Git repository."
+  exit 1
+fi
+
+# Preserve existing behavior when a branch name is provided
+if [ -n "${1:-}" ]; then
+  log_run git branch -D "$1"
+  exit $?
+fi
+
+# fzf is required for interactive multi-selection
+if ! command -v fzf >/dev/null 2>&1; then
+  echo "Error: fzf is required for interactive branch selection."
+  echo "Install it using: brew install fzf"
+  exit 1
+fi
+
+current_branch=$(git branch --show-current)
+
+selected_branches=$(
+  git for-each-ref \
+    --format='%(refname:short)' \
+    --sort=-committerdate \
+    refs/heads/ |
+  grep -Fxv "$current_branch" |
+  fzf \
+    --multi \
+    --prompt="Select branches to delete: " \
+    --header="Space: select/unselect | Enter: delete | Esc: cancel" \
+    --bind="space:toggle" \
+    --marker="✓"
+)
+
+if [ -z "$selected_branches" ]; then
+  echo "No branches selected."
+  exit 0
+fi
+
+echo
+echo "Deleting selected branches:"
+
+while IFS= read -r branch; do
+  [ -n "$branch" ] && log_run git branch -D "$branch"
+done <<< "$selected_branches"

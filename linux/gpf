@@ -1,0 +1,40 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+# gpf - pull a file from a branch, commit, and push
+
+set -euo pipefail
+
+branch="${1-}"
+path="${2-}"
+message="${3-}"
+remote="${4-}"
+
+if [[ -z "$branch" ]]; then
+  read -r -p "Branch to pull from: " branch
+fi
+
+if [[ -z "$path" ]]; then
+  read -r -p "Path to file: " path
+fi
+
+if [[ -z "$remote" ]]; then
+  read -r -p "Remote (default: origin): " remote
+  remote="${remote:-origin}"
+fi
+
+if [[ -z "$message" ]]; then
+  message="Merge ${path} from ${branch}"
+fi
+
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "Not inside a git repository."
+  exit 1
+fi
+
+# Fetch the file from the specified branch and merge into current branch.
+log_run git fetch "$remote" "$branch"
+log_run git checkout FETCH_HEAD -- "$path"
+
+log_run git add "$path"
+log_run git commit -m "$message"
+log_run git push "$remote" HEAD

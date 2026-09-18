@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/log_info.sh"
+# Show current date and time; optional timezone parameter: UTC, IST, ET, PT, CET, GMT
+TZ_NAME="UTC"
+if [ "$#" -eq 1 ]; then
+	# Convert parameter to uppercase in a portable way
+	arg=$(echo "$1" | tr '[:lower:]' '[:upper:]')
+	case "$arg" in
+		UTC) TZ_NAME="UTC";;
+		IST) TZ_NAME="Asia/Kolkata";;
+		ET) TZ_NAME="America/New_York";;
+		PT) TZ_NAME="America/Los_Angeles";;
+		CET) TZ_NAME="Europe/Berlin";;
+		GMT) TZ_NAME="GMT";;
+		*) echo "Unknown timezone: $1" >&2; exit 1;;
+	esac
+fi
+log_info "+ TZ=$TZ_NAME date '+%Y-%m-%dT%H:%M:%S %Z'"
+TZ="$TZ_NAME" date '+%Y-%m-%dT%H:%M:%S %Z'

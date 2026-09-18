@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+source "$(dirname "$0")/log_info.sh"
+
+# Shortcut for 'npx skills add -a github-copilot claude-code'
+if [ -z "$1" ]; then
+  echo "Usage: copyskill <package> [additional params...]"
+  exit 1
+fi
+
+log_run npx skills add "$@" -a github-copilot claude-code
