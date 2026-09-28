@@ -1,0 +1,10 @@
+#!/bin/bash
+source "$(dirname "$0")/log_info.sh"
+
+# Add skills globally for Codex, GitHub Copilot, and Claude Code.
+if [ -z "$1" ]; then
+  echo "Usage: nxsg <package> [additional params...]"
+  exit 1
+fi
+
+log_run npx skills add "$@" -g -a codex github-copilot claude-code

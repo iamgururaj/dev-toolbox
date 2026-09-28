@@ -72,19 +72,44 @@ Below is a list of available scripts for both Linux and Windows, with their usag
 | ns.cmd    | `ns.cmd`                             | npm start                                   |
 | nt.cmd    | `nt.cmd`                             | npm test                                    |
 
+Windows `nxs.cmd <package> [additional params...]` runs `npx skills add` with Codex, GitHub Copilot, and Claude Code selected by default. Extra arguments are forwarded, for example: `nxs.cmd vercel-labs/agent-skills --skill web-design-guidelines`.
+
+### Global Skill Installation (Linux/macOS and Windows)
+
+Use `nxsg <package> [additional params...]` to install skills globally for Codex, GitHub Copilot, and Claude Code. Both `linux/nxsg` and `win/nxsg.cmd` forward extra arguments to `npx skills add` and include `-g`.
+
+```sh
+nxsg vercel-labs/agent-skills --skill web-design-guidelines
+```
+
+On Linux/macOS, make the script executable with `chmod +x /path/to/dev-toolbox/linux/nxsg` and add `linux/` to PATH. On Windows, add `win/` to PATH or run `.\win\nxsg.cmd <package>` from PowerShell. Node.js/npm must be installed.
+
 ## Instructions
 
 ### Adding Scripts to PATH
 
 #### Windows
 
-To run the scripts from any directory, add the `win` folder to your system PATH:
+##### Automatic Setup (Recommended)
+
+Simply run the provided setup script from Command Prompt, PowerShell, or by double-clicking it:
+
+```cmd
+set-win-path.cmd
+```
+*(or `setup-path.cmd`)*
+
+This script automatically resolves the full absolute path of the `win` directory and adds it permanently to your User `PATH` environment variable without length limits, and makes all commands (`gaa`, `gac`, `gacp`, `gp`, `gs`, etc.) immediately executable from any terminal.
+
+##### Manual Setup
+
+To manually add the `win` folder to your system PATH:
 
 1. Open the Start menu and search for "Environment Variables".
 2. Click on "Edit the system environment variables".
 3. In the System Properties window, click "Environment Variables...".
-4. Under "System variables", find and select the `Path` variable, then click "Edit...".
-5. Click "New" and add the full path to your `win` folder (e.g., `C:\Users\yourname\repos\dev-scripts-kit\win`).
+4. Under "System variables" or "User variables", find and select the `Path` variable, then click "Edit...".
+5. Click "New" and add the full path to your `win` folder (e.g., `C:\guru\projects\dev-toolbox\win`).
 6. Click OK to save and close all dialogs.
 7. Restart your terminal or Command Prompt for changes to take effect.
 
