@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Kill all processes using a given TCP or UDP port.
+# Usage: ./port-kill.sh [-f] [-y] <port>
+#   -f  force kill (SIGKILL) instead of graceful SIGTERM
+#   -y  skip confirmation prompt
+set -euo pipefail
+
+usage() { echo "Usage: $(basename "$0") [-f] [-y] <port>" >&2; exit 1; }
+
+SIGNAL=TERM
+ASSUME_YES=false
+while getopts ":fy" opt; do
+  case "$opt" in
+    f) SIGNAL=KILL ;;
+    y) ASSUME_YES=true ;;
+    *) usage ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+[[ $# -eq 1 ]] || usage
+PORT="$1"
+[[ "$PORT" =~ ^[0-9]+$ ]] && (( PORT >= 1 && PORT <= 65535 )) || { echo "Error: invalid port '$PORT'" >&2; exit 1; }
+
+get_pids() {
+  if command -v lsof >/dev/null 2>&1; then
+    lsof -t -nP -i ":$PORT" 2>/dev/null | sort -u || true
+  elif command -v fuser >/dev/null 2>&1; then
+    { fuser "$PORT/tcp" 2>/dev/null; fuser "$PORT/udp" 2>/dev/null; } | tr -s ' ' '\n' | grep -E '^[0-9]+$' | sort -u || true
+  elif command -v ss >/dev/null 2>&1; then
+    ss -tulpnH "sport = :$PORT" | grep -oE 'pid=[0-9]+' | cut -d= -f2 | sort -u || true
+  else
+    echo "Error: none of 'lsof', 'fuser', or 'ss' is installed" >&2
+    exit 1
+  fi
+}
+
+PIDS="$(get_pids)"
+if [[ -z "$PIDS" ]]; then
+  echo "No process found on port $PORT"
+  [[ $EUID -ne 0 ]] && echo "(Note: run with sudo to include processes owned by other users)" >&2
+  exit 0
+fi
+
+echo "Processes on port $PORT:"
+ps -o pid=,user=,comm= -p $(echo "$PIDS" | paste -sd, -) | awk '{printf "  PID %-8s USER %-12s CMD %s\n", $1, $2, $3}'
+
+if ! $ASSUME_YES; then
+  read -r -p "Send SIG$SIGNAL to these processes? [y/N] " reply
+  [[ "$reply" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 0; }
+fi
+
+for pid in $PIDS; do
+  if kill -s "$SIGNAL" "$pid" 2>/dev/null; then
+    echo "Sent SIG$SIGNAL to $pid"
+  else
+    echo "Failed to kill $pid (try sudo or -f)" >&2
+  fi
+done
+
+# If graceful, wait briefly and report survivors
+if [[ "$SIGNAL" == TERM ]]; then
+  sleep 1
+  REMAINING="$(get_pids)"
+  if [[ -n "$REMAINING" ]]; then
+    echo "Still running on port $PORT: $(echo "$REMAINING" | paste -sd' ' -). Re-run with -f to force." >&2
+    exit 1
+  fi
+fi
+echo "Port $PORT is free."

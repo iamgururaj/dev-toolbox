@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# List processes listening on / connected to a given TCP or UDP port.
+# Usage: ./port-list.sh <port>
+set -euo pipefail
+
+usage() { echo "Usage: $(basename "$0") <port>" >&2; exit 1; }
+
+[[ $# -eq 1 ]] || usage
+PORT="$1"
+[[ "$PORT" =~ ^[0-9]+$ ]] && (( PORT >= 1 && PORT <= 65535 )) || { echo "Error: invalid port '$PORT'" >&2; exit 1; }
+
+if command -v lsof >/dev/null 2>&1; then
+  if ! lsof -nP -i ":$PORT"; then
+    echo "No process found on port $PORT"
+  fi
+elif command -v ss >/dev/null 2>&1; then
+  OUT="$(ss -tulpn "sport = :$PORT" | tail -n +2)"
+  if [[ -z "$OUT" ]]; then
+    echo "No process found on port $PORT"
+  else
+    ss -tulpn "sport = :$PORT"
+  fi
+else
+  echo "Error: neither 'lsof' nor 'ss' is installed" >&2
+  exit 1
+fi
+
+if [[ $EUID -ne 0 ]]; then
+  echo "(Note: run with sudo to see processes owned by other users)" >&2
+fi
