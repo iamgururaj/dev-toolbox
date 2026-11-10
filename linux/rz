@@ -1,0 +1,16 @@
+#!/bin/bash
+# rz - reload Zsh configuration
+source "$(dirname "$0")/log_info.sh"
+
+set -euo pipefail
+
+ZSHRC="$HOME/.zshrc"
+
+if [[ ! -f "$ZSHRC" ]]; then
+  echo "No .zshrc found at $ZSHRC"
+  exit 1
+fi
+
+echo "Reloading $ZSHRC..."
+source "$ZSHRC"
+echo "Zsh configuration reloaded."
