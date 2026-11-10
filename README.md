@@ -109,7 +109,7 @@ To manually add the `win` folder to your system PATH:
 2. Click on "Edit the system environment variables".
 3. In the System Properties window, click "Environment Variables...".
 4. Under "System variables" or "User variables", find and select the `Path` variable, then click "Edit...".
-5. Click "New" and add the full path to your `win` folder (e.g., `C:\guru\projects\dev-toolbox\win`).
+5. Click "New" and add the full path to your `win` folder (e.g., `C:\projects\dev-toolbox\win`).
 6. Click OK to save and close all dialogs.
 7. Restart your terminal or Command Prompt for changes to take effect.
 

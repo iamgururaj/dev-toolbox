@@ -1,6 +1,5 @@
 #!/bin/bash
 source "$(dirname "$0")/log_info.sh"
-# filepath: /Users/gururaj/projects/guru/dev-scripts-kit/linux/e
 
 # Prompt for variable name if not provided
 if [ -z "$1" ]; then
