@@ -17,6 +17,7 @@ Below is a list of available scripts for both Linux and Windows, with their usag
 | gb.sh     | `gb.sh`                              | git branch                                  |
 | gsu.sh    | `gsu.sh`                             | set upstream to origin/<current-branch>     |
 | gcl.sh    | `gcl.sh <repo-url>`                  | git clone <repo-url>                        |
+| ghrc      | `ghrc <owner/repo>`                   | gh repo clone <owner/repo>                  |
 | gcm.sh    | `gcm.sh`                             | git checkout main                           |
 | gco.sh    | `gco.sh <branch>`                    | git checkout <branch>                       |
 | gcob.sh   | `gcob.sh <branch>`                   | git checkout -b <branch>                    |
@@ -49,6 +50,7 @@ Below is a list of available scripts for both Linux and Windows, with their usag
 | gb.cmd    | `gb.cmd`                             | git branch                                  |
 | gsu.cmd   | `gsu.cmd`                            | set upstream to origin/<current-branch>     |
 | gcl.cmd   | `gcl.cmd <repo-url>`                 | git clone <repo-url>                        |
+| ghrc.cmd  | `ghrc.cmd <owner/repo>`              | gh repo clone <owner/repo>                  |
 | gcm.cmd   | `gcm.cmd`                            | git checkout main                           |
 | gco.cmd   | `gco.cmd <branch>`                   | git checkout <branch>                       |
 | gcob.cmd  | `gcob.cmd <branch>`                  | git checkout -b <branch>                    |
@@ -73,6 +75,16 @@ Below is a list of available scripts for both Linux and Windows, with their usag
 | nt.cmd    | `nt.cmd`                             | npm test                                    |
 
 Windows `nxs.cmd <package> [additional params...]` runs `npx skills add` with Codex, GitHub Copilot, and Claude Code selected by default. Extra arguments are forwarded, for example: `nxs.cmd vercel-labs/agent-skills --skill web-design-guidelines`.
+
+### Clone a GitHub Repository
+
+Run `ghrc OWNER/REPO` from the directory where you want the clone. Install GitHub CLI (`gh`) first. The shortcut forwards a destination and any clone flags, as in `ghrc OWNER/REPO "local copy" -- --depth 1`.
+
+### List GitHub Repositories
+
+Run `ghrl [OWNER] [flags]` on Linux/macOS or Windows to list repositories with GitHub CLI. For example, `ghrl OWNER --limit 50`. Omit the owner to list repositories for the authenticated account.
+
+Use `ghrl` for listing. The existing `grl` shortcut runs `git reset --hard`.
 
 ### Global Skill Installation (Linux/macOS and Windows)
 
